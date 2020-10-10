@@ -1,0 +1,50 @@
+/* Answer 1 */
+
+USE ap;
+
+SELECT vendor_name AS 'Vendor', 
+CONCAT(vendor_contact_last_name, ', ', vendor_contact_first_name) AS 'Vendor Contact',
+CONCAT('Phone #: ', vendor_phone) AS "Contact's Numbers",
+CONCAT('State: ', vendor_state, '. City: ', vendor_city) AS 'Vendor Location'
+FROM vendors 
+WHERE vendor_state != "CA"
+ORDER BY vendor_state, vendor_city, vendor_name;
+
+/* Answer 2 */
+
+use om;
+
+SELECT CONCAT(customer_last_name, ', ', customer_first_name) AS 'customer_name', 
+order_date, shipped_date, customer_state
+FROM orders 
+JOIN customers USING (customer_id)
+WHERE shipped_date IS NOT NULL
+UNION 
+SELECT CONCAT(customer_last_name, ', ', customer_first_name) AS 'customer_name', 
+order_date, 'Not Yet Shipped', customer_state
+FROM orders
+JOIN customers USING (customer_id)
+WHERE shipped_date is NULL
+ORDER BY order_date desc, customer_name;
+
+
+/* Answer 3 */
+
+use ap;
+
+SELECT vendor_name AS 'Vendor Name', CONCAT(first_name, ' ', last_name) AS 'Vendor Contact Name', 
+invoice_total AS 'Invoice Total', invoice_due_date AS 'Due Date', 
+payment_date AS 'Payment Date'
+FROM vendors
+LEFT JOIN vendor_contacts USING (vendor_id)
+LEFT JOIN invoices USING (vendor_id)
+ORDER BY vendor_name, invoice_total desc;
+
+/* Answer 4 */
+
+use ap;
+
+SELECT CONCAT(vendor_city, ', ', vendor_state) AS 'Vendor City/State', vendor_name AS 'Vendor Name',
+invoice_id AS 'Invoice ID', line_item_description AS 'Line Item Description', 
+account_number AS 'Account Number'
+FROM vendors INNER JOIN invoice_line_items
